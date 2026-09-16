@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS TECH - Next-Gen Tech Store & Device Hub</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                            accent: '#06b6d4',
+                            glow: '#6366f1'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 25px 2px rgba(6, 182, 212, 0.4);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.1); }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-gray-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-black bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 bg-clip-text text-transparent tracking-tight">NEXUS</span>
+                    <span class="text-xs block font-semibold text-gray-500 dark:text-gray-400 -mt-1 tracking-widest uppercase">TECH HUB</span>
+                </div>
+            </div>
+
+            <!-- Global Search Bar -->
+            <div class="flex-1 max-w-xl hidden md:block">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search smartphones, laptops, audio, accessories..." 
+                        class="w-full pl-11 pr-10 py-2.5 rounded-full bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all">
+                    <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 transition" title="Toggle Theme">
+                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+
+                <!-- Comparison Drawer Trigger -->
+                <button onclick="openCompareModal()" class="relative p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 transition" title="Compare Devices">
+                    <i class="fa-solid fa-[#scale-balanced] fa-scale-balanced text-lg"></i>
+                    <span id="compareBadge" class="hidden absolute -top-1 -right-1 bg-cyan-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center animate-bounce">0</span>
+                </button>
+
+                <!-- Wishlist Trigger -->
+                <button onclick="toggleWishlistDrawer()" class="relative p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 transition" title="Wishlist">
+                    <i class="fa-solid fa-heart text-lg"></i>
+                    <span id="wishlistBadge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </button>
+
+                <!-- Cart Trigger -->
+                <button onclick="toggleCartDrawer()" class="relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition shadow-md shadow-blue-600/30">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="hidden sm:inline">Cart</span>
+                    <span id="cartBadge" class="bg-white text-blue-600 text-xs font-extrabold px-2 py-0.5 rounded-full ml-1">0</span>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="p-3 border-t border-gray-200 dark:border-slate-800 md:hidden">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="mobileSearchInput" oninput="handleMobileSearch()" placeholder="Search devices..." 
+                    class="w-full pl-11 pr-4 py-2 rounded-full bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+    </header>
+
+    <section class="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-950 text-white py-12 md:py-20 border-b border-slate-800">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.2),transparent_50%)]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            
+            <div class="space-y-6 text-center md:text-left">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+                    <i class="fa-solid fa-bolt text-amber-400"></i> NEXUS TECH • Incotech Direct Catalog (LKR)
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                    Discover Next-Gen <br>
+                    <span class="bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent">Flagship Tech & Gaming Gear</span>
+                </h1>
+                <p class="text-slate-300 text-sm sm:text-base max-w-lg mx-auto md:mx-0 font-normal">
+                    Explore detailed benchmarks, compare flagship specs side-by-side, and shop the ultimate tech gear with lightning speed.
+                </p>
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+                    <a href="#catalog" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition shadow-lg shadow-blue-500/30 flex items-center gap-2">
+                        Browse Catalog <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <button onclick="quickCompareTopDevices()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-code-compare text-cyan-400"></i> Compare Top Laptops
+                    </button>
+                </div>
+            </div>
+
+            <!-- Featured Banner Card -->
+            <div id="heroFeaturedCard" class="relative group">
+                <!-- Dynamically populated hero device -->
+            </div>
+
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="catalog">
+        
+        <!-- Filter Controls Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            
+            <!-- Category Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none" id="categoryChips">
+                <!-- Javascript will inject categories -->
+            </div>
+
+            <!-- Secondary Controls (Sort & Clear) -->
+            <div class="flex items-center justify-between md:justify-end gap-3 min-w-max border-t md:border-t-0 pt-3 md:pt-0 border-gray-200 dark:border-slate-800">
+                <span id="resultsCount" class="text-xs font-semibold text-gray-500 dark:text-gray-400">Showing 0 products</span>
+                
+                <div class="relative">
+                    <select id="sortSelect" onchange="handleSort()" class="pl-3 pr-8 py-2 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                        <option value="featured">Featured First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Top Rated</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Products dynamic rendering -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="noResults" class="hidden text-center py-20">
+            <div class="w-20 h-20 mx-auto rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-gray-400 text-3xl mb-4">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200">No Tech Devices Found</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or switching categories.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition">
+                Reset All Filters
+            </button>
+        </div>
+
+        <!-- Incotech Direct Catalog -->
+        <section id="incotechCatalog" class="mt-12 rounded-3xl overflow-hidden border border-blue-500/20 bg-white dark:bg-slate-900 shadow-xl">
+            <div class="p-6 md:p-8 bg-gradient-to-r from-blue-950 via-slate-900 to-cyan-950 text-white">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-300">
+                            <i class="fa-solid fa-store"></i> Incotech Direct Catalog
+                        </span>
+                        <h2 class="text-2xl md:text-3xl font-black mt-2">PC, Laptop, Gaming, CCTV & Tech Catalog</h2>
+                        <p class="text-sm text-slate-300 mt-2 max-w-2xl">
+                            Incotech products are embedded directly into this website as normal product cards — no iframe. Use the category filters and search above to browse the imported catalog.
+                        </p>
+                    </div>
+                    <a href="https://incotech.lk/shop" target="_blank" rel="noopener noreferrer"
+                       class="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition">
+                        Open Incotech Shop <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="p-5 md:p-6 bg-slate-50 dark:bg-slate-950">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-bold">
+                    <button onclick="setCategory('laptops')" class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-left hover:border-blue-500 transition"><i class="fa-solid fa-laptop mr-2 text-blue-500"></i>Laptops</button>
+                    <button onclick="setCategory('components')" class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-left hover:border-blue-500 transition"><i class="fa-solid fa-microchip mr-2 text-blue-500"></i>PC Components</button>
+                    <button onclick="setCategory('cctv')" class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-left hover:border-blue-500 transition"><i class="fa-solid fa-video mr-2 text-blue-500"></i>CCTV & Security</button>
+                    <button onclick="setCategory('storage')" class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-left hover:border-blue-500 transition"><i class="fa-solid fa-hard-drive mr-2 text-blue-500"></i>Storage</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="detailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative transition-all">
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modalContent" class="p-6 md:p-8">
+                <!-- Dynamically populated product detail view -->
+            </div>
+        </div>
+    </div>
+
+    <div id="compareModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col">
+            <div class="p-6 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-cyan-500"></i> Device Comparison Matrix
+                    </h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Compare specs side-by-side to make the smartest tech upgrade</p>
+                </div>
+                <button onclick="closeCompareModal()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div id="compareTableContainer" class="p-6 overflow-x-auto flex-1">
+                <!-- Comparison table injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Drawer -->
+    <div id="cartDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 border-l border-gray-200 dark:border-slate-800 flex flex-col">
+        <div class="p-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 class="font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-blue-500"></i> Your Tech Cart
+            </h3>
+            <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cartItemsContainer" class="p-5 flex-1 overflow-y-auto space-y-4">
+            <!-- Dynamic Cart Items -->
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="p-5 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 space-y-3">
+            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>Subtotal</span>
+                <span id="cartSubtotal" class="font-semibold text-gray-800 dark:text-gray-200">Rs. 0.00</span>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>Estimated Tax (8%)</span>
+                <span id="cartTax" class="font-semibold text-gray-800 dark:text-gray-200">Rs. 0.00</span>
+            </div>
+            <div class="flex justify-between text-base font-bold text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-slate-800">
+                <span>Total Amount</span>
+                <span id="cartTotal" class="text-blue-500">Rs. 0.00</span>
+            </div>
+            <button onclick="openCheckoutModal()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition">
+                Proceed to Checkout <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Wishlist Drawer -->
+    <div id="wishlistDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 border-l border-gray-200 dark:border-slate-800 flex flex-col">
+        <div class="p-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 class="font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-heart text-rose-500"></i> Wishlist
+            </h3>
+            <button onclick="toggleWishlistDrawer()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div id="wishlistItemsContainer" class="p-5 flex-1 overflow-y-auto space-y-4">
+            <!-- Dynamic Wishlist Items -->
+        </div>
+    </div>
+
+    <div id="checkoutModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div class="text-center space-y-3">
+                <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 mx-auto flex items-center justify-center text-3xl">
+                    <i class="fa-solid fa-[#circle-check] fa-circle-check"></i>
+                </div>
+                <h3 class="text-xl font-bold">Order Simulation Ready!</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    This web app is a frontend prototype demonstrating tech specifications, comparison matrix, and full store interactions.
+                </p>
+                <div id="checkoutSummaryList" class="bg-gray-50 dark:bg-slate-950 p-4 rounded-xl text-left text-xs space-y-2 max-h-40 overflow-y-auto">
+                    <!-- Cart summary injected here -->
+                </div>
+                <button onclick="completeCheckout()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition">
+                    Complete Mock Purchase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Tech Devices Database (Incotech Lanka Inspired - Prices in LKR)
+        const devicesDatabase = [
+            {
+                id: 'lenovo-ideapad-slim3',
+                name: 'Lenovo IdeaPad Slim 3 15IRH10 Core i5',
+                brand: 'Lenovo',
+                category: 'laptops',
+                price: 295000,
+                rating: 4.7,
+                reviewCount: 88,
+                featured: true,
+                image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80',
+                tagline: '13th Gen Core i5 H-Series with 16GB DDR5 & 2Y Warranty',
+                specs: {
+                    processor: 'Intel Core i5-13420H (8 Cores, Up to 4.6GHz)',
+                    ram: '16GB DDR5-4800MHz RAM',
+                    storage: '512GB PCIe 4.0 NVMe M.2 SSD',
+                    display: '15.3" WUXGA (1920x1200) IPS Anti-glare 300nits',
+                    battery: 'Integrated 50Wh with 65W Round Tip Fast Charger',
+                    os: 'Windows 11 Home',
+                    weight: '1.59 kg',
+                    ports: '2x USB-A, 1x USB-C (PD 3.0 + DP 1.2), HDMI 1.4, SD Reader, Audio Jack'
+                },
+                benchmarkScore: 88,
+                colors: ['#71717a', '#18181b']
+            },
+            {
+                id: 'asus-rog-zephyrus-g16',
+                name: 'ASUS ROG Zephyrus G16 OLED (2026)',
+                brand: 'ASUS',
+                category: 'laptops',
+                price: 870000,
+                rating: 4.9,
+                reviewCount: 184,
+                featured: true,
+                image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Ultra-thin OLED Gaming Laptop with Intel Core Ultra 9 & RTX 4070',
+                specs: {
+                    processor: 'Intel Core Ultra 9 185H (16 Cores, Up to 5.1GHz)',
+                    ram: '32GB LPDDR5X 7467MHz Dual Channel',
+                    storage: '2TB PCIe 4.0 NVMe M.2 SSD',
+                    display: '16" ROG Nebula OLED 2.5K (2560x1600) 240Hz 0.2ms',
+                    battery: '90Wh Battery with 100W USB-C Type-C Power Delivery',
+                    os: 'Windows 11 Pro',
+                    weight: '1.85 kg',
+                    ports: 'Thunderbolt 4, USB-C 3.2, 2x USB-A 3.2, HDMI 2.1, SD Express'
+                },
+                benchmarkScore: 97,
+                colors: ['#000000', '#e2e8f0']
+            },
+            {
+                id: 'asus-tuf-f15',
+                name: 'ASUS TUF Gaming F15 (RTX 4060)',
+                brand: 'ASUS',
+                category: 'laptops',
+                price: 445000,
+                rating: 4.8,
+                reviewCount: 142,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Military-grade durability with 144Hz FHD & RTX 4060 8GB',
+                specs: {
+                    processor: 'Intel Core i7-13620H (10 Cores, Up to 4.9GHz)',
+                    ram: '16GB DDR5-5200MHz (Expandable to 64GB)',
+                    storage: '1TB PCIe 4.0 NVMe SSD',
+                    display: '15.6-inch FHD (1920x1080) 144Hz IPS-level 100% sRGB',
+                    battery: '90Wh 4-cell Li-ion Battery',
+                    os: 'Windows 11 Home',
+                    weight: '2.20 kg',
+                    ports: 'Thunderbolt 4, USB 3.2 Gen 2 Type-C, 2x USB 3.2 Type-A, HDMI 2.1, RJ45 LAN'
+                },
+                benchmarkScore: 92,
+                colors: ['#334155']
+            },
+            {
+                id: 'msi-cyborg-15',
+                name: 'MSI Cyborg 15 A12V (RTX 4050)',
+                brand: 'MSI',
+                category: 'laptops',
+                price: 345000,
+                rating: 4.6,
+                reviewCount: 95,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Cyberpunk inspired translucent body with 144Hz screen',
+                specs: {
+                    processor: 'Intel Core i5-12450H (8 Cores, Up to 4.4GHz)',
+                    ram: '16GB DDR5 4800MHz RAM',
+                    storage: '512GB NVMe PCIe Gen4 SSD',
+                    display: '15.6-inch FHD (1920x1080) 144Hz IPS-Level Display',
+                    battery: '3-Cell 53.5Wh Battery',
+                    os: 'Windows 11 Home',
+                    weight: '1.98 kg',
+                    ports: '1x USB 3.2 Type-C, 2x USB 3.2 Type-A, HDMI 2.1, RJ45 Ethernet'
+                },
+                benchmarkScore: 86,
+                colors: ['#0f172a']
+            },
+            {
+                id: 'msi-katana-15',
+                name: 'MSI Katana 15 B13V Core i7',
+                brand: 'MSI',
+                category: 'laptops',
+                price: 485000,
+                rating: 4.8,
+                reviewCount: 112,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1625842268584-8f3296236761?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Dragon-Blade aesthetics with RTX 4060 8GB Graphics',
+                specs: {
+                    processor: 'Intel Core i7-13620H (10 Cores, Up to 4.9GHz)',
+                    ram: '16GB DDR5 5200MHz RAM',
+                    storage: '1TB M.2 NVMe PCIe SSD',
+                    display: '15.6-inch FHD (1920x1080) 144Hz IPS 100% sRGB',
+                    battery: '3-Cell 53.5Whr Battery',
+                    os: 'Windows 11 Home',
+                    weight: '2.25 kg',
+                    ports: '1x USB-C 3.2, 2x USB-A 3.2, 1x USB-A 2.0, HDMI 2.1, Gig LAN'
+                },
+                benchmarkScore: 93,
+                colors: ['#111827']
+            },
+            {
+                id: 'acer-predator-helios-16',
+                name: 'Acer Predator Helios Neo 16',
+                brand: 'Acer',
+                category: 'laptops',
+                price: 520000,
+                rating: 4.8,
+                reviewCount: 76,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Core i7 14th Gen with WQXGA 165Hz IPS Display & RTX 4060',
+                specs: {
+                    processor: 'Intel Core i7-14700HX (20 Cores, Up to 5.5GHz)',
+                    ram: '16GB DDR5 5600MHz (Dual Channel)',
+                    storage: '1TB Gen4 PCIe NVMe SSD',
+                    display: '16" WQXGA (2560x1600) 165Hz 100% sRGB 500nits G-SYNC',
+                    battery: '90Wh 4-Cell Li-ion',
+                    os: 'Windows 11 Home',
+                    weight: '2.60 kg',
+                    ports: '2x Thunderbolt 4, 3x USB 3.2 Gen 2, HDMI 2.1, MicroSD Reader'
+                },
+                benchmarkScore: 95,
+                colors: ['#0f172a']
+            },
+            {
+                id: 'hp-victus-15',
+                name: 'HP Victus 15 (Ryzen 5 / RTX 3050)',
+                brand: 'HP',
+                category: 'laptops',
+                price: 285000,
+                rating: 4.5,
+                reviewCount: 130,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Budget gaming powerhouse with OMEN Gaming Hub control',
+                specs: {
+                    processor: 'AMD Ryzen 5 7535HS (6 Cores, Up to 4.55GHz)',
+                    ram: '16GB DDR5-4800MHz',
+                    storage: '512GB PCIe Gen4 NVMe M.2 SSD',
+                    display: '15.6-inch FHD (1920x1080) 144Hz IPS 250nits',
+                    battery: '52.5Wh 3-cell Polymer Battery',
+                    os: 'Windows 11 Home',
+                    weight: '2.29 kg',
+                    ports: '1x USB Type-C, 2x USB Type-A, HDMI 2.1, RJ45, Audio Jack'
+                },
+                benchmarkScore: 82,
+                colors: ['#1e293b']
+            },
+            {
+                id: 'dell-g15-5530',
+                name: 'Dell G15 5530 Gaming Laptop',
+                brand: 'Dell',
+                category: 'laptops',
+                price: 425000,
+                rating: 4.7,
+                reviewCount: 64,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Alienware-inspired thermal design with RTX 4050 6GB',
+                specs: {
+                    processor: 'Intel Core i7-13650HX (14 Cores, Up to 4.9GHz)',
+                    ram: '16GB DDR5 4800MHz',
+                    storage: '1TB M.2 PCIe NVMe SSD',
+                    display: '15.6-inch FHD (1920x1080) 165Hz sRGB 100% ComfortView Plus',
+                    battery: '86Wh 6-Cell Battery',
+                    os: 'Windows 11 Home',
+                    weight: '2.81 kg',
+                    ports: '1x USB-C 3.2 Gen 2, 3x USB 3.2 Gen 1, HDMI 2.1, RJ-45 LAN'
+                },
+                benchmarkScore: 90,
+                colors: ['#18181b', '#312e81']
+            },
+            {
+                id: 'macbook-pro-m3',
+                name: 'MacBook Pro 16" M3 Max',
+                brand: 'Apple',
+                category: 'laptops',
+                price: 1050000,
+                rating: 4.9,
+                reviewCount: 230,
+                featured: true,
+                image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Extreme performance for pro creators & 3D developers',
+                specs: {
+                    processor: 'Apple M3 Max (16-core CPU, 40-core GPU)',
+                    ram: '48GB Unified Memory',
+                    storage: '1TB Superfast NVMe SSD',
+                    display: '16.2" Liquid Retina XDR (3456x2234) 120Hz ProMotion',
+                    battery: 'Up to 22 Hours video playback (100Wh)',
+                    os: 'macOS Sequoia',
+                    weight: '2.16 kg',
+                    ports: '3x Thunderbolt 4, HDMI 2.1, SDXC slot, MagSafe 3'
+                },
+                benchmarkScore: 98,
+                colors: ['#7d7e80', '#2e3033']
+            },
+            {
+                id: 'macbook-air-m2',
+                name: 'MacBook Air 15" M2 Chip',
+                brand: 'Apple',
+                category: 'laptops',
+                price: 395000,
+                rating: 4.8,
+                reviewCount: 165,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Impossibly thin 15-inch design with fanless silent performance',
+                specs: {
+                    processor: 'Apple M2 Chip (8-core CPU, 10-core GPU)',
+                    ram: '16GB Unified Memory',
+                    storage: '512GB SSD Storage',
+                    display: '15.3" Liquid Retina Display with True Tone (500 nits)',
+                    battery: 'Up to 18 Hours battery life',
+                    os: 'macOS Sequoia',
+                    weight: '1.51 kg',
+                    ports: 'MagSafe 3 Charging Port, 2x Thunderbolt / USB 4, Headphone Jack'
+                },
+                benchmarkScore: 91,
+                colors: ['#0f172a', '#e2e8f0', '#fef3c7']
+            },
+            {
+                id: 'samsung-s24-ultra',
+                name: 'Samsung Galaxy S24 Ultra 5G',
+                brand: 'Samsung',
+                category: 'smartphones',
+                price: 390000,
+                rating: 4.8,
+                reviewCount: 412,
+                featured: true,
+                image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Galaxy AI is here with Titanium Frame & Built-in S-Pen',
+                specs: {
+                    processor: 'Snapdragon 8 Gen 3 for Galaxy (4nm)',
+                    ram: '12GB LPDDR5X',
+                    storage: '512GB UFS 4.0',
+                    display: '6.8" Dynamic AMOLED 2X Quad HD+ 120Hz (2600 nits)',
+                    battery: '5000 mAh (45W Fast Wired, Wireless PowerShare)',
+                    os: 'One UI 6.1 based on Android 14',
+                    weight: '232 g',
+                    ports: 'USB Type-C 3.2 Gen 1, S-Pen Slot'
+                },
+                benchmarkScore: 95,
+                colors: ['#334155', '#e2e8f0', '#f59e0b']
+            },
+            {
+                id: 'iphone-15-pro-max',
+                name: 'iPhone 15 Pro Max',
+                brand: 'Apple',
+                category: 'smartphones',
+                price: 360000,
+                rating: 4.7,
+                reviewCount: 520,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Aerospace-grade titanium design with 5x Telephoto zoom',
+                specs: {
+                    processor: 'Apple A17 Pro Chip (6-core CPU, 6-core GPU)',
+                    ram: '8GB LPDDR5',
+                    storage: '256GB NVMe',
+                    display: '6.7" Super Retina XDR OLED 120Hz Always-On ProMotion',
+                    battery: '4422 mAh (Up to 29h video playback)',
+                    os: 'iOS 17',
+                    weight: '221 g',
+                    ports: 'USB Type-C (USB 3 up to 10Gbps)'
+                },
+                benchmarkScore: 94,
+                colors: ['#64748b', '#1e293b', '#f8fafc']
+            },
+            {
+                id: 'asus-rog-swift-monitor',
+                name: 'ASUS ROG Swift 27" 240Hz Gaming Monitor',
+                brand: 'ASUS',
+                category: 'monitors',
+                price: 185000,
+                rating: 4.9,
+                reviewCount: 58,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Fast IPS 0.5ms Response Time with G-SYNC & HDR400',
+                specs: {
+                    processor: 'ASUS GamePlus & GameVisual Engine',
+                    ram: 'N/A',
+                    storage: 'N/A',
+                    display: '27" QHD (2560x1440) Fast IPS 240Hz 0.5ms GTG',
+                    battery: 'AC Power Adapter (50W max)',
+                    os: 'On-Screen Display Menu (OSD joystick)',
+                    weight: '6.2 kg',
+                    ports: '2x HDMI 2.0, 1x DisplayPort 1.4, USB 3.0 Hub, Audio Out'
+                },
+                benchmarkScore: 96,
+                colors: ['#000000']
+            },
+            {
+                id: 'msi-optix-g274f',
+                name: 'MSI Optix G274F 27" 180Hz Gaming Monitor',
+                brand: 'MSI',
+                category: 'monitors',
+                price: 88000,
+                rating: 4.7,
+                reviewCount: 92,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Rapid IPS panel with 1ms GtG & Night Vision mode',
+                specs: {
+                    processor: 'MSI Gaming Intelligence',
+                    ram: 'N/A',
+                    storage: 'N/A',
+                    display: '27" Full HD (1920x1080) Rapid IPS 180Hz 1ms',
+                    battery: 'AC Power Adapter',
+                    os: 'MSI Display Kit Software',
+                    weight: '4.5 kg',
+                    ports: '2x HDMI 2.0, 1x DisplayPort 1.2a, Headphone Out'
+                },
+                benchmarkScore: 89,
+                colors: ['#0f172a']
+            },
+            {
+                id: 'amd-ryzen-7-7700x',
+                name: 'AMD Ryzen 7 7700X Desktop Processor',
+                brand: 'AMD',
+                category: 'components',
+                price: 115000,
+                rating: 4.9,
+                reviewCount: 140,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=800&q=80',
+                tagline: '8 Cores 16 Threads Socket AM5 processor for extreme gaming',
+                specs: {
+                    processor: 'AMD Zen 4 Architecture (4.5GHz Base, 5.4GHz Boost)',
+                    ram: 'Supports DDR5 5200MHz Dual Channel',
+                    storage: '40MB Total Cache (L2+L3)',
+                    display: 'Integrated AMD Radeon Graphics',
+                    battery: '105W TDP',
+                    os: 'Windows 11 / Linux Ready',
+                    weight: '80 g',
+                    ports: 'PCIe 5.0 Support (Socket AM5)'
+                },
+                benchmarkScore: 94,
+                colors: ['#ef4444', '#000000']
+            },
+            {
+                id: 'intel-core-i7-14700k',
+                name: 'Intel Core i7-14700K Desktop Processor',
+                brand: 'Intel',
+                category: 'components',
+                price: 148000,
+                rating: 4.8,
+                reviewCount: 98,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=800&q=80',
+                tagline: '20 Cores (8P + 12E) unlocked processor with 5.6GHz Turbo',
+                specs: {
+                    processor: 'Intel Raptor Lake Refresh 20 Cores / 28 Threads',
+                    ram: 'Supports DDR5-5600 & DDR4-3200',
+                    storage: '33MB Intel Smart Cache',
+                    display: 'Intel UHD Graphics 770',
+                    battery: '125W Base TDP / 253W Max Turbo',
+                    os: 'Windows 11 Compatible',
+                    weight: '85 g',
+                    ports: 'LGA1700 Socket, PCIe 5.0 & 4.0 lanes'
+                },
+                benchmarkScore: 96,
+                colors: ['#2563eb']
+            },
+            {
+                id: 'asus-rtx-4070-super',
+                name: 'ASUS Dual GeForce RTX 4070 SUPER 12GB',
+                brand: 'ASUS',
+                category: 'components',
+                price: 285000,
+                rating: 4.9,
+                reviewCount: 82,
+                featured: true,
+                image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=800&q=80',
+                tagline: 'NVIDIA Ada Lovelace DLSS 3 & Ray Tracing GPU Powerhouse',
+                specs: {
+                    processor: 'NVIDIA RTX 4070 SUPER (7168 CUDA Cores)',
+                    ram: '12GB GDDR6X 192-bit Memory',
+                    storage: '21 Gbps Memory Speed',
+                    display: 'Max Resolution: 7680x4320 (4K/8K)',
+                    battery: 'Recommended PSU: 650W (1x 16-pin connector)',
+                    os: 'NVIDIA Studio & Game Ready Drivers',
+                    weight: '950 g',
+                    ports: '1x HDMI 2.1a, 3x DisplayPort 1.4a'
+                },
+                benchmarkScore: 95,
+                colors: ['#000000']
+            },
+            {
+                id: 'logitech-g-pro-x',
+                name: 'Logitech G PRO X Superlight Wireless Mouse',
+                brand: 'Logitech',
+                category: 'accessories',
+                price: 42000,
+                rating: 4.9,
+                reviewCount: 310,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Ultra-lightweight <63g esports gaming mouse with HERO 25K Sensor',
+                specs: {
+                    processor: '32-bit ARM Processor',
+                    ram: 'Onboard Memory Profile',
+                    storage: 'N/A',
+                    display: 'N/A',
+                    battery: '70 Hours constant motion battery life',
+                    os: 'Logitech G HUB Software',
+                    weight: '63 g',
+                    ports: 'LIGHTSPEED Wireless USB Receiver, Charging Cable'
+                },
+                benchmarkScore: 93,
+                colors: ['#000000', '#ffffff']
+            },
+            {
+                id: 'hyperx-cloud-3',
+                name: 'HyperX Cloud III Wireless Gaming Headset',
+                brand: 'HyperX',
+                category: 'audio',
+                price: 48000,
+                rating: 4.8,
+                reviewCount: 175,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Up to 120 hours battery life with DTS Headphone:X Spatial Audio',
+                specs: {
+                    processor: '53mm Angled Drivers',
+                    ram: 'N/A',
+                    storage: 'N/A',
+                    display: 'N/A',
+                    battery: '120 Hours Battery Life on single charge',
+                    os: 'HyperX NGENUITY Software',
+                    weight: '300 g',
+                    ports: '2.4GHz Wireless USB-C Dongle, USB-A Adapter'
+                },
+                benchmarkScore: 91,
+                colors: ['#ef4444', '#000000']
+            },
+            {
+                id: 'razer-blackwidow-v4',
+                name: 'Razer BlackWidow V4 Mechanical Keyboard',
+                brand: 'Razer',
+                category: 'accessories',
+                price: 55000,
+                rating: 4.7,
+                reviewCount: 89,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Tactile Green Switches with per-key Razer Chroma RGB & Macro keys',
+                specs: {
+                    processor: '8000Hz HyperPolling Rate Engine',
+                    ram: 'Hybrid On-Board Storage (up to 5 profiles)',
+                    storage: 'N/A',
+                    display: 'N/A',
+                    battery: 'Wired USB Connection',
+                    os: 'Razer Synapse 3',
+                    weight: '1120 g',
+                    ports: 'Detachable Type-C Cable, USB 2.0 Passthrough'
+                },
+                benchmarkScore: 90,
+                colors: ['#000000']
+            },
+            {
+                id: 'sony-wh1000xm5',
+                name: 'Sony WH-1000XM5 Noise Canceling Headphones',
+                brand: 'Sony',
+                category: 'audio',
+                price: 120000,
+                rating: 4.9,
+                reviewCount: 680,
+                featured: true,
+                image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Industry Leading Noise Cancellation with Dual V1 Processors',
+                specs: {
+                    processor: 'Integrated Processor V1 + HD Noise Canceling QN1',
+                    ram: 'N/A',
+                    storage: 'N/A',
+                    display: 'N/A',
+                    battery: '30 Hours (NC On) / 3 min quick charge = 3 hours',
+                    os: 'Sony Headphones Connect App',
+                    weight: '250 g',
+                    ports: '3.5mm Audio Jack, USB-C Charging'
+                },
+                benchmarkScore: 94,
+                colors: ['#0f172a', '#f1f5f9']
+            },
+            {
+                id: 'sony-a7iv-camera',
+                name: 'Sony Alpha A7 IV Mirrorless Camera',
+                brand: 'Sony',
+                category: 'cameras',
+                price: 750000,
+                rating: 4.9,
+                reviewCount: 110,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80',
+                tagline: '33MP Full-frame sensor with 4K 60p 10-bit 4:2:2 video recording',
+                specs: {
+                    processor: 'BIONZ XR Image Processor',
+                    ram: 'Dual Card Slots (CFexpress Type A / SD UHS-II)',
+                    storage: 'Dual Slot Recording',
+                    display: '3.0" Vari-Angle Touchscreen LCD (1.03m-dot)',
+                    battery: 'NP-FZ100 (Approx. 580 shots per charge)',
+                    os: 'Sony Alpha Menu Interface',
+                    weight: '658 g',
+                    ports: 'Full HDMI, USB 3.2 Gen 2 Type-C, Mic & Headphone'
+                },
+                benchmarkScore: 96,
+                colors: ['#000000']
+            },
+            {
+                id: 'dji-rs3-pro',
+                name: 'DJI RS 3 Pro Gimbal Stabilizer',
+                brand: 'DJI',
+                category: 'accessories',
+                price: 260000,
+                rating: 4.7,
+                reviewCount: 94,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Automated axis locks & carbon fiber payload gimbal',
+                specs: {
+                    processor: '3rd-Gen RS Stabilization Algorithm',
+                    ram: 'Automated Axis Locks',
+                    storage: 'LiDAR Autofocus Support',
+                    display: '1.8" OLED Full-Color Touchscreen',
+                    battery: '12 Hours Battery Life (BG30 Grip)',
+                    os: 'DJI Ronin App',
+                    weight: '1.5 kg',
+                    ports: 'RSA/NATO Ports, USB-C Control Ports'
+                },
+                benchmarkScore: 88,
+                colors: ['#1e293b']
+            },
+            {
+                id: 'apple-watch-ultra-2',
+                name: 'Apple Watch Ultra 2 GPS + Cellular',
+                brand: 'Apple',
+                category: 'smartwatches',
+                price: 240000,
+                rating: 4.8,
+                reviewCount: 156,
+                featured: false,
+                image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80',
+                tagline: 'Rugged titanium case with 3000 nits display & Double Tap',
+                specs: {
+                    processor: 'S9 SiP with 4-core Neural Engine',
+                    ram: '64GB Internal Storage',
+                    storage: '64GB',
+                    display: '49mm Always-On Retina OLED (3000 nits peak)',
+                    battery: 'Up to 36 Hours normal use / 72h Low Power',
+                    os: 'watchOS 10',
+                    weight: '61.4 g',
+                    ports: 'Magnetic Fast Charger USB-C'
+                },
+                benchmarkScore: 89,
+                colors: ['#e2e8f0']
+            }
+        ];
+
+        // Incotech direct catalog snapshot — manually embedded, no iframe/API dependency.
+        const incotechDirectProducts = [
+          ["inc-b1503","Asus Expertbook B1503CVA CORE 5 210H + 16GB + 3Y Warranty","ASUS","laptops",290000,"https://images.weserv.nl/?url=incotech.lk/images/products/370_main_1778825766.jpg","Core 5-210H • 16GB DDR5 • 512GB NVMe • 3Y Warranty","Out of Stock","Intel Core 5-210H","16GB DDR5 4800MHz","512GB NVMe M.2 SSD","15.6-inch FHD 300nits"],
+          ["inc-hpvictus","HP VICTUS 15 FA2275TX CORE i5 + RTX3050","HP","laptops",315000,"https://images.weserv.nl/?url=incotech.lk/images/products/36_main_1771479852.jpg","Core i5 13th Gen • 8GB • 512GB • RTX 3050","Out of Stock","Intel Core i5-13420H","8GB DDR4-3200","512GB PCIe Gen4 NVMe","15.6-inch FHD IPS 144Hz"],
+          ["inc-mk270r","Logitech MK270r Wireless Keyboard and Mouse Combo","Logitech","accessories",9500,"https://images.weserv.nl/?url=incotech.lk/images/products/111_main_1772779208.jpg","Wireless keyboard and mouse combo","Out of Stock","N/A","N/A","N/A","N/A"],
+          ["inc-v15r3","LENOVO V15 G4 AMN AMD RYZEN 3 16GB","Lenovo","laptops",190000,"https://images.weserv.nl/?url=incotech.lk/images/products/385_main_1783315566.webp","Ryzen 3 • 16GB • 512GB","In Stock","AMD Ryzen 3","16GB","512GB SSD","15.6-inch FHD"],
+          ["inc-loq4050","Lenovo LOQ 15ARP10E + Ryzen 7 (RTX 4050)","Lenovo","laptops",388000,"https://images.weserv.nl/?url=incotech.lk/images/products/357_main_1784959452.jpg","Ryzen 7 • 16GB • 512GB • RTX 4050 6GB","In Stock","AMD Ryzen 7 7735HS","16GB DDR5-4800","512GB PCIe 4.0 NVMe","15.6-inch FHD IPS 144Hz"],
+          ["inc-i712700f","INTEL CORE I7 12700F","Intel","components",79500,"https://images.weserv.nl/?url=incotech.lk/images/products/279_main_1774380238.webp","25MB Cache • Up to 4.90GHz","In Stock","Intel Core i7-12700F","DDR4 / DDR5","25MB Cache","Discrete GPU required"],
+          ["inc-cyborg","MSI CYBORG 15 Black Edition A13UC i5 + RTX3050","MSI","laptops",335000,"https://images.weserv.nl/?url=incotech.lk/images/products/64_main_1787292523.jpg","Core i5 • 16GB • 512GB • RTX 3050 4GB","In Stock","Intel Core i5","16GB","512GB SSD","15.6-inch FHD gaming"],
+          ["inc-brother","Brother DCP-T420W Ink Tank Printer","Brother","accessories",64000,"https://images.weserv.nl/?url=incotech.lk/images/products/107_main_1772778290.jpg","Wireless ink tank printer","In Stock","Print / Scan / Copy","N/A","N/A","N/A"],
+          ["inc-z890","MSI Z890 GAMING PLUS (WIFI) DDR5 MOTHERBOARD","MSI","components",139000,"https://images.weserv.nl/?url=incotech.lk/images/products/256_main_1773586374.jpg","Z890 gaming motherboard with Wi-Fi and DDR5","In Stock","Intel Z890 platform","DDR5","Multiple M.2 slots","PCIe graphics support"],
+          ["inc-i514600kf","Intel Core i5-14600KF","Intel","components",76000,"https://images.weserv.nl/?url=incotech.lk/images/products/272_main_1774379161.webp","14 cores • 20 threads • up to 5.3GHz","In Stock","Intel Core i5-14600KF","DDR4 / DDR5","24MB Smart Cache","Discrete GPU required"],
+          ["inc-msithin","MSI Thin 15 B2RVE CORE 5 + RTX 4050","MSI","laptops",379500,"https://images.weserv.nl/?url=incotech.lk/images/products/340_main_1775221782.jpg","Core 5-210H • 16GB • 512GB • RTX 4050","In Stock","Intel Core 5-210H","16GB DDR4","512GB NVMe PCIe SSD","15.6-inch FHD 144Hz"],
+          ["inc-gamdias","GAMDIAS HELIOS M1-750B 750W 80 Plus Bronze","Gamdias","components",19000,"https://images.weserv.nl/?url=incotech.lk/images/products/226_main_1773579240.jpg","750W 80 Plus Bronze certified power supply","Coming Soon","N/A","N/A","N/A","N/A"],
+          ["inc-9950x3d","AMD Ryzen 9 9950X3D","AMD","components",216500,"https://images.weserv.nl/?url=incotech.lk/images/products/312_main_1774384817.jpg","16 cores • 32 threads • up to 5.7GHz","Out of Stock","AMD Ryzen 9 9950X3D","DDR5 platform","AM5 / cache","Integrated platform graphics"],
+          ["inc-corsair16","Corsair Vengeance RGB LPX 16GB DDR5 5600MHz C40","Corsair","components",99000,"https://images.weserv.nl/?url=incotech.lk/images/products/165_main_1773493187.jpg","16GB DDR5 5600MHz memory module","In Stock","N/A","16GB DDR5 5600MHz","N/A","N/A"],
+          ["inc-g402","Logitech G402 Gaming Mouse","Logitech","accessories",9500,"https://images.weserv.nl/?url=incotech.lk/images/products/114_main_1772779892.jpg","Wired programmable gaming mouse","In Stock","Gaming sensor","Onboard memory","N/A","N/A"],
+          ["inc-dcpups","DCP D1200 Version 2.1 UPS","DCP","accessories",20000,"https://images.weserv.nl/?url=incotech.lk/images/products/205_main_1773576213.jpg","1200VA UPS power backup","In Stock","N/A","N/A","N/A","LED indicators"],
+          ["inc-tufa15","Asus TUF Gaming A15 FA506NCG – Ryzen 7 + RTX 3050","ASUS","laptops",355000,"https://images.weserv.nl/?url=incotech.lk/images/products/25_main_1771397119.jpg","Ryzen 7 • 16GB • 512GB • RTX 3050 4GB","Out of Stock","AMD Ryzen 7","16GB","512GB SSD","15.6-inch FHD gaming"],
+          ["inc-tufa16","ASUS TUF GAMING A16 FA607NUG Ryzen 7 RTX 4050 6GB","ASUS","laptops",399000,"https://images.weserv.nl/?url=incotech.lk/images/products/26_main_1771397420.jpg","Ryzen 7 • 16GB • 512GB • RTX 4050 6GB","Out of Stock","AMD Ryzen 7","16GB","512GB SSD","16-inch gaming display"],
+          ["inc-legion5070","Lenovo Legion 5 15AKP10 Gaming – Ryzen AI 7 + RTX 5070","Lenovo","laptops",710000,"https://images.weserv.nl/?url=incotech.lk/images/products/62_main_1771655577.jpg","Ryzen AI 7 • 32GB • 512GB • RTX 5070 8GB","In Stock","AMD Ryzen AI 7","32GB","512GB SSD","Gaming display"]
+        ].map((p,i)=>({id:p[0],name:p[1],brand:p[2],category:p[3],price:p[4],rating:4.7,reviewCount:0,featured:i%6===0,image:p[5],tagline:p[6],status:p[7],specs:{processor:p[8],ram:p[9],storage:p[10],display:p[11],battery:'N/A',os:'Windows / Linux compatible',weight:'N/A',ports:'USB / HDMI / LAN where applicable'},benchmarkScore:82+(i%17),colors:['#111827']}));
+        devicesDatabase.push(...incotechDirectProducts);
+
+        // Expanded Incotech direct catalog — product cards are embedded in this site, not iframed.
+        const incotechExpandedProducts = [
+          ["inc-amd8400f","AMD Ryzen 5 8400F","AMD","components",43000,"https://images.weserv.nl/?url=incotech.lk/images/products/302_main_1774383675.jpg","6 cores • 12 threads • up to 4.7GHz","In Stock","AM5","DDR5","16MB L3","Discrete GPU required"],
+          ["inc-hpprobook460","HP ProBook 460 16 G11 – Ultra 7 + 3Y Warranty","HP","laptops",315000,"https://images.weserv.nl/?url=incotech.lk/images/products/8_main_1771330856.webp","Ultra 7 • 8GB • 512GB","Out of Stock","Intel Core Ultra 7","8GB","512GB SSD","16-inch class display"],
+          ["inc-lenv15i7","Lenovo V15 G5 Core i7 13620H","Lenovo","laptops",269000,"https://images.weserv.nl/?url=incotech.lk/images/products/39_main_1771564383.jpg","Core i7 • 16GB • 512GB","Out of Stock","Intel Core i7-13620H","16GB","512GB SSD","15.6-inch display"],
+          ["inc-ideapad1","Lenovo IdeaPad 1 14AMN7 – Ryzen 5 + 2Y Warranty","Lenovo","laptops",185000,"https://images.weserv.nl/?url=incotech.lk/images/products/52_main_1771652481.jpg","Ryzen 5 • 16GB • 512GB","Out of Stock","AMD Ryzen 5","16GB","512GB SSD","14-inch class display"],
+          ["inc-ultra5","Intel Core Ultra 5","Intel","components",95000,"https://images.weserv.nl/?url=incotech.lk/images/products/326_main_1774386480.jpg","24MB Cache • up to 4.9GHz","Out of Stock","Intel Core Ultra 5","DDR5","24MB Cache","Desktop CPU"],
+          ["inc-vivobookf1504","Asus Vivobook F1504VA i5 14th Gen + 16GB DDR5","ASUS","laptops",230000,"https://images.weserv.nl/?url=incotech.lk/images/products/17_main_1771335111.webp","Core i5 14th Gen • 16GB • 512GB","Out of Stock","Intel Core i5 14th Gen","16GB DDR5","512GB SSD","15.6-inch class display"],
+          ["inc-rogstrix","Asus ROG Strix G16 G615LW (2026) Ultra 9 + RTX 5080","ASUS","laptops",1099000,"https://images.weserv.nl/?url=incotech.lk/images/products/339_main_1774950449.png","Ultra 9 • 16GB • 1TB • RTX 5080 16GB","In Stock","Intel Ultra 9","16GB","1TB SSD","Gaming display"],
+          ["inc-vivobook15","Asus Vivobook 15 X1504VAP BQ4172 – Core 5","ASUS","laptops",215000,"https://images.weserv.nl/?url=incotech.lk/images/products/326_main_1774386480.jpg","Core 5 • 8GB • 512GB","Out of Stock","Intel Core 5","8GB","512GB SSD","15.6-inch class display"],
+          ["inc-cyborga2rudx","MSI Cyborg 15 Gaming A2RUDX – Core 5 + RTX 3050","MSI","laptops",325000,"https://images.weserv.nl/?url=incotech.lk/images/products/335_main_1774620035.jpg","Core 5 • 16GB • 512GB • RTX 3050 6GB","Out of Stock","Intel Core 5","16GB","512GB SSD","Gaming display"],
+          ["inc-katana5060","MSI Katana 15 B14WFK Intel i9 14900HX RTX 5060","MSI","laptops",619000,"https://images.weserv.nl/?url=incotech.lk/images/products/375_main_1781186213.webp","Core i9 • 16GB • 1TB • RTX 5060 8GB","Out of Stock","Intel Core i9-14900HX","16GB","1TB SSD","Gaming display"],
+          ["inc-legion5060","Lenovo Legion 5 15AKP10 Gaming – Ryzen AI 7 + RTX 5060","Lenovo","laptops",615000,"https://images.weserv.nl/?url=incotech.lk/images/products/61_main_1771655281.jpg","Ryzen AI 7 • 32GB • 512GB • RTX 5060 8GB","Out of Stock","AMD Ryzen AI 7","32GB","512GB SSD","15.1-inch OLED 165Hz"],
+          ["inc-tufa16fx","Asus TUF Gaming A16 FX608 – Ryzen 9 + RTX 5060","ASUS","laptops",595000,"https://images.weserv.nl/?url=incotech.lk/images/products/260_main_1774023830.jpg","Ryzen 9 • 16GB • 1TB • RTX 5060 8GB","Out of Stock","AMD Ryzen 9","16GB","1TB SSD","Gaming display"],
+          ["inc-tuff16","ASUS TUF GAMING F16 FX607VU Core 5 15th GEN RTX 4050 6GB","ASUS","laptops",399000,"https://images.weserv.nl/?url=incotech.lk/images/products/261_main_1774026054.webp","Core 5 • 16GB • 512GB • RTX 4050 6GB","In Stock","Intel Core 5 15th Gen","16GB","512GB SSD","Gaming display"],
+          ["inc-cyborg5060","MSI CYBORG 15 B2RWFKG CORE 7 RTX 5060","MSI","laptops",529000,"https://images.weserv.nl/?url=incotech.lk/images/products/262_main_1774081488.webp","Core 7 • 16GB • 512GB • RTX 5060","In Stock","Intel Core 7","16GB","512GB SSD","Gaming display"],
+          ["inc-hpvictus4050","HP Victus 15 FB3105AX Ryzen 7 RTX 4050 6GB","HP","laptops",409000,"https://images.weserv.nl/?url=incotech.lk/images/products/263_main_1774085218.webp","Ryzen 7 • 16GB • 1TB • RTX 4050 6GB","In Stock","AMD Ryzen 7","16GB","1TB SSD","15.6-inch gaming"],
+          ["inc-cyborga2rve","MSI Cyborg 15 Gaming A2RVE – Core 5 + RTX 4050","MSI","laptops",380000,"https://images.weserv.nl/?url=incotech.lk/images/products/334_main_1774619500.jpg","Core 5 • 16GB • 1TB • RTX 4050 6GB","Out of Stock","Intel Core 5","16GB","1TB SSD","Gaming display"],
+          ["inc-hp15fd1335","HP 15-FD1335TU Core 5 + 3Y Warranty","HP","laptops",259000,"https://images.weserv.nl/?url=incotech.lk/images/products/5_main_1771312347.jpg","Core 5 • 8GB • 512GB • Windows 11 Home","In Stock","Intel Core 5","8GB","512GB SSD","15.6-inch class display"],
+          ["inc-tuff16jhr","ASUS TUF F16 FX608JHR i7 14650HX RTX 5050","ASUS","laptops",549000,"https://images.weserv.nl/?url=incotech.lk/images/products/28_main_1771398613.jpg","Core i7 14th Gen • 16GB • 1TB • RTX 5050","Out of Stock","Intel Core i7-14650HX","16GB","1TB SSD","Gaming display"],
+          ["inc-hpprobook4g1i","HP ProBook 4 G1i 14 – Ultra 7 + 3Y Warranty","HP","laptops",349000,"https://images.weserv.nl/?url=incotech.lk/images/products/11_main_1771333261.webp","Ultra 7 • 8GB • 512GB","Out of Stock","Intel Ultra 7","8GB","512GB SSD","14-inch class display"],
+          ["inc-expertbookcore3","Asus Expertbook B1503 Core 3 14th Gen 3Y Warranty","ASUS","laptops",189000,"https://images.weserv.nl/?url=incotech.lk/images/products/45_main_1771580089.jpg","Core 3 • 8GB • 512GB • 3Y","Out of Stock","Intel Core 3","8GB","512GB SSD","15.6-inch class display"],
+          ["inc-vivobookgo16","Asus Vivobook Go 15 E1504FA – Ryzen 5 + 16GB","ASUS","laptops",195000,"https://images.weserv.nl/?url=incotech.lk/images/products/16_main_1771334857.jpg","Ryzen 5 • 16GB • 512GB","Out of Stock","AMD Ryzen 5","16GB","512GB SSD","15-inch class display"],
+          ["inc-hp15fd0834","HP 15-FD0834TU Core 7 13th Gen + 3Y Warranty","HP","laptops",349000,"https://images.weserv.nl/?url=incotech.lk/images/products/6_main_1771329963.jpg","Core i7 • 16GB • 1TB • 3Y","In Stock","Intel Core i7","16GB","1TB SSD","15.6-inch class display"],
+          ["inc-p1503","Asus ExpertBook P1503CVA – Core 5 210H","ASUS","laptops",230000,"https://images.weserv.nl/?url=incotech.lk/images/products/371_main_1779691658.webp","Core 5 • 8GB • 512GB","Out of Stock","Intel Core 5-210H","8GB","512GB SSD","15.6-inch class display"],
+          ["inc-v15r5","LENOVO V15 G4 AMN AMD RYZEN 5 16GB","Lenovo","laptops",225000,"https://images.weserv.nl/?url=incotech.lk/images/products/386_main_1783315710.webp","Ryzen 5 • 16GB • 512GB","In Stock","AMD Ryzen 5","16GB","512GB SSD","15.6-inch class display"],
+          ["inc-hpvictus2050","HP VICTUS 15 FB3166AX Ryzen 5 + RTX2050 4GB","HP","laptops",275000,"https://images.weserv.nl/?url=incotech.lk/images/products/338_main_1774940531.jpg","Ryzen 5 • 16GB • 512GB • RTX 2050","Out of Stock","AMD Ryzen 5","16GB","512GB SSD","15.6-inch gaming"],
+          ["inc-acer-swift","ACER SWIFT LITE-14 ULTRA 5 – 16GB – 512GB – 2 YEARS","Acer","laptops",273000,"https://images.weserv.nl/?url=incotech.lk/images/products/373_main_1780493369.webp","Ultra 5 • 16GB • 512GB • 2.8K OLED","In Stock","Intel Ultra 5","16GB","512GB SSD","14-inch 2.8K OLED"],
+          ["inc-katana5050","MSI Katana 15 B14WEK Intel i7 + RTX 5050","MSI","laptops",539000,"https://images.weserv.nl/?url=incotech.lk/images/products/260_main_1774023830.jpg","Core i7 • 16GB • 1TB • RTX 5050","Out of Stock","Intel Core i7","16GB","1TB SSD","Gaming display"],
+          ["inc-ideapadslim3","Lenovo IdeaPad Slim 3 15IRU8 – i3 + 2Y Warranty","Lenovo","laptops",209000,"https://images.weserv.nl/?url=incotech.lk/images/products/48_main_1771651485.jpg","Core i3 • 8GB • 512GB","In Stock","Intel Core i3","8GB","512GB SSD","15.6-inch display"],
+          ["inc-msimodern15","MSI Modern 15 F13MG Core i5 + 2Y Warranty","MSI","laptops",225000,"https://images.weserv.nl/?url=incotech.lk/images/products/63_main_1771655992.jpg","Core i5 13th Gen • 8GB • 512GB","Out of Stock","Intel Core i5 13th Gen","8GB","512GB SSD","15.6-inch display"],
+          ["inc-kings500","KINGSTON NV3 500GB PCIE 4.0 NVME M.2 SSD","Kingston","storage",37000,"https://images.weserv.nl/?url=incotech.lk/images/products/70_main_1771673311.gif","500GB PCIe 4.0 NVMe • 5,000/3,000MB/s","In Stock","N/A","N/A","500GB","M.2 2280"],
+          ["inc-msib860","MSI PRO B860 P DDR5 Motherboard","MSI","components",75000,"https://images.weserv.nl/?url=incotech.lk/images/products/257_main_1773586440.jpg","ATX • DDR5 • LGA1851","In Stock","LGA1851","DDR5","4 DIMM slots","ATX"],
+          ["inc-gamdiascase","Gamdias Mars E5M Case With 250W Power Supply","Gamdias","components",11000,"https://images.weserv.nl/?url=incotech.lk/images/products/223_main_1773578994.jpg","Micro Tower • Micro-ATX / Mini-ITX • 250W PSU","In Stock","N/A","N/A","1 x 2.5/3.5-inch bay","Micro Tower"],
+          ["inc-ontenhub","ONTEN USB HUB 7 PORTS OTN-5317S","ONTEN","accessories",7500,"https://images.weserv.nl/?url=incotech.lk/images/products/361_main_1776431851.jpg","USB 3.2 hub • 3x USB-A + 4x USB-C","In Stock","USB 3.2 Gen 1","N/A","N/A","USB-A / USB-C"],
+          ["inc-canon-g3730","Canon PIXMA MegaTank G3730 All-in-one Printer + WiFi","Canon","printers",62000,"https://images.weserv.nl/?url=incotech.lk/images/products/136_main_1773486898.jpg","Print / Scan / Copy • Wi-Fi • MegaTank","In Stock","N/A","N/A","Ink Tank","A4"],
+          ["inc-dell-qtc1250","Dell Pro QTC 1250 Tower Desktop with Monitor","Dell","desktops",300000,"https://images.weserv.nl/?url=incotech.lk/images/products/137_main_1773486960.png","Core Ultra 5 • 8GB DDR5 • 512GB SSD + 22-inch monitor","In Stock","Intel Core Ultra 5 225","8GB DDR5","512GB SSD","22-inch Full HD"],
+          ["inc-corsairt9","Portable SSD T9 4TB USB 3.2 Gen 2x2","Samsung","storage",129000,"https://images.weserv.nl/?url=incotech.lk/images/products/203_main_1773576002.jpg","4TB portable SSD • up to 2,000MB/s","In Stock","USB 3.2 Gen 2x2","N/A","4TB","Portable SSD"]
+        ].map((p,i)=>({id:p[0],name:p[1],brand:p[2],category:p[3],price:p[4],rating:4.7,reviewCount:0,featured:i%7===0,image:p[5],tagline:p[6],status:p[7],specs:{processor:p[8],ram:p[9],storage:p[10],display:p[11],battery:'N/A',os:'Windows / Linux compatible',weight:'N/A',ports:'USB / HDMI / LAN where applicable'},benchmarkScore:80+(i%19),colors:['#111827']}));
+        devicesDatabase.push(...incotechExpandedProducts);
+
+        // More verified Incotech catalog items — direct product cards, no iframe.
+        const incotechMoreProducts = [
+          ["inc-lenovo2in1","Lenovo IdeaPad 5 2-in-1 14AGP11 – Ryzen AI 5","Lenovo","laptops",389000,"https://images.weserv.nl/?url=incotech.lk/images/products/378_main_1782821391.jpg","Ryzen AI 5 430 • 16GB DDR5 • 512GB NVMe • Touch + Pen","In Stock","AMD Ryzen AI 5 430","16GB DDR5-5600","512GB PCIe 4.0 NVMe","14-inch WUXGA IPS Touch"],
+          ["inc-loq5050","LENOVO LOQ 15IRX10 i7 13th Gen HX + RTX 5050 8GB","Lenovo","laptops",459000,"https://images.weserv.nl/?url=incotech.lk/images/products/367_main_1778135421.jpg","Core i7-13650HX • 16GB DDR5 • 512GB NVMe • RTX 5050 8GB","In Stock","Intel Core i7-13650HX","16GB DDR5-4800","512GB PCIe Gen4 NVMe","15.6-inch FHD 144Hz"],
+          ["inc-vivobookr3","Asus Vivobook Go 15 E1504FA Ryzen 3 + 2 Years Warranty","ASUS","laptops",199000,"https://images.weserv.nl/?url=incotech.lk/images/products/366_main_1777898646.png","Ryzen 3 7320U • 8GB LPDDR5 • 512GB NVMe • Windows 11","In Stock","AMD Ryzen 3 7320U","8GB LPDDR5","512GB NVMe","15.6-inch FHD IPS"],
+          ["inc-loq3050","Lenovo LOQ 15ARP10E + Ryzen 7 (RTX 3050)","Lenovo","laptops",357000,"https://images.weserv.nl/?url=incotech.lk/images/products/356_main_1784959386.jpg","Ryzen 7 7735HS • 16GB DDR5 • 512GB NVMe • RTX 3050 6GB","In Stock","AMD Ryzen 7 7735HS","16GB DDR5-4800","512GB PCIe 4.0 NVMe","15.6-inch FHD 144Hz"],
+          ["inc-dellqtc","Dell Pro QTC 1250 Tower Desktop with Monitor","Dell","desktops",300000,"https://images.weserv.nl/?url=incotech.lk/images/products/137_main_1773486960.png","Core Ultra 5 225 • 8GB DDR5 • 512GB SSD • 22-inch FHD monitor","In Stock","Intel Core Ultra 5 225","8GB DDR5","512GB SSD","22-inch Full HD"],
+          ["inc-cruciale100","CRUCIAL E100 NVMe PCIe Gen4 X4 1TB M.2 NVME SSD","Crucial","storage",49000,"https://images.weserv.nl/?url=incotech.lk/images/products/142_main_1773487731.jpg","1TB NVMe • PCIe Gen4 x4 • up to 5,000/4,500MB/s","In Stock","N/A","N/A","1TB","M.2 2280"],
+          ["inc-kingston1tb","Kingston NV3 NVMe 1TB PCIe Gen 4.0 SSD","Kingston","storage",56500,"https://images.weserv.nl/?url=incotech.lk/images/products/71_main_1771673623.gif","1TB NVMe • M.2 2280 • 6,000/4,000MB/s • 3Y Warranty","In Stock","N/A","N/A","1TB","M.2 2280 PCIe 4.0"],
+          ["inc-canon3010","Canon Inkjet Printer – PIXMA G3010","Canon","printers",56500,"https://images.weserv.nl/?url=incotech.lk/images/products/130_main_1773485776.jpg","Print / Scan / Copy • Wi-Fi • 4800 × 1200 dpi","In Stock","N/A","N/A","Ink Tank","A4 / A5 / B5 / Letter"],
+          ["inc-brother2700","Brother MFC-L2700D Laser Printer","Brother","printers",55000,"https://images.weserv.nl/?url=incotech.lk/images/products/108_main_1772778713.jpg","Print / Scan / Copy / Fax • 30ppm • USB","In Stock","N/A","N/A","Toner","A4 Mono Laser"],
+          ["inc-hp520","HP Smart Tank 520 All-in-One Printer","HP","printers",46500,"https://images.weserv.nl/?url=incotech.lk/images/products/199_main_1773575059.jpg","Color ink tank • Print / Copy / Scan • refillable ink","In Stock","N/A","N/A","Ink Tank","A4"],
+          ["inc-i712700","INTEL CORE I7 12700","Intel","components",89500,"https://images.weserv.nl/?url=incotech.lk/images/products/284_main_1774381057.webp","12 cores • 20 threads • up to 4.9GHz • 3Y Warranty","In Stock","Intel Core i7-12700","DDR4 / DDR5","25MB Cache","LGA1700"],
+          ["inc-crucial32d5","Crucial 32GB 1x32GB DDR5 5600MHz Desktop Memory","Crucial","components",115500,"https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=900&q=85","32GB DDR5-5600 UDIMM • 3Y Warranty","In Stock","N/A","32GB DDR5-5600","N/A","Desktop UDIMM"]
+        ].map((p,i)=>({id:p[0],name:p[1],brand:p[2],category:p[3],price:p[4],rating:4.7,reviewCount:0,featured:i%5===0,image:p[5],tagline:p[6],status:p[7],specs:{processor:p[8],ram:p[9],storage:p[10],display:p[11],battery:'N/A',os:'Windows / Linux compatible',weight:'N/A',ports:'USB / HDMI / LAN where applicable'},benchmarkScore:84+(i%13),colors:['#111827']}));
+        devicesDatabase.push(...incotechMoreProducts);
+
+        // Additional verified Incotech products discovered from the current catalog.
+        const incotechFreshProducts = [
+          ["inc-i312100","INTEL CORE I3 12100","Intel","components",43000,"https://images.weserv.nl/?url=incotech.lk/images/products/270_main_1774378785.webp","12th Gen • 4 Cores • 8 Threads • up to 4.3GHz","Out of Stock","Intel Core i3-12100","DDR4 / DDR5","12MB Cache","LGA1700"],
+          ["inc-rtx30508","MSI GeForce RTX 3050 VENTUS 2X XS 8GB OC Graphics Card","MSI","components",118500,"https://images.weserv.nl/?url=incotech.lk/images/products/138_main_1773487137.jpg","RTX 3050 • 8GB GDDR6 • Dual Fan","In Stock","NVIDIA RTX 3050","8GB GDDR6","128-bit","PCIe 4.0"],
+          ["inc-vivox1404","ASUS VIVOBOOK X1404VA CORE i5","ASUS","laptops",209000,"https://images.weserv.nl/?url=incotech.lk/images/products/195_main_1773573440.webp","Core 5-120U • 8GB • 512GB SSD • FHD IPS","In Stock","Intel Core 5-120U","8GB","512GB SSD","14-inch FHD IPS"],
+          ["inc-viewsonic2215","ViewSonic VA2215-H 22-inch 100Hz Full HD Monitor","ViewSonic","monitors",22900,"https://images.weserv.nl/?url=incotech.lk/images/products/91_main_1772168952.jpg","22-inch FHD • 100Hz • 1ms response","In Stock","N/A","N/A","N/A","22-inch FHD 100Hz"],
+          ["inc-corsair64","Corsair Vengeance RGB 64GB (2x32) DDR5 6000MT/s AMD EXPO","Corsair","components",297000,"https://images.weserv.nl/?url=incotech.lk/images/products/167_main_1773493595.jpg","64GB DDR5 • 6000MT/s • AMD EXPO","Out of Stock","N/A","64GB DDR5-6000","N/A","Desktop UDIMM"],
+          ["inc-lenovol27","Lenovo 27-inch L27Q-4A 2K IPS 100Hz 99% sRGB","Lenovo","monitors",67900,"https://images.weserv.nl/?url=incotech.lk/images/products/392_main_1785908795.webp","27-inch QHD • IPS • 100Hz • 99% sRGB","In Stock","N/A","N/A","N/A","27-inch QHD IPS"],
+          ["inc-msimp225","MSI PRO MP225V 21.5-inch 100Hz VA Monitor","MSI","monitors",27000,"https://images.weserv.nl/?url=incotech.lk/images/products/83_main_1772084455.jpg","21.5-inch FHD • 100Hz • 1ms MPRT","In Stock","N/A","N/A","N/A","21.5-inch FHD 100Hz"],
+          ["inc-pro3000","Prolink PRO3000SFCU 3000VA UPS","Prolink","accessories",65000,"https://images.weserv.nl/?url=incotech.lk/images/products/207_main_1773576416.jpg","3000VA • 230VAC • Tower UPS","In Stock","N/A","N/A","3000VA","230VAC"],
+          ["inc-pro903","Prolink PRO903 ES 3KVA Online UPS","Prolink","accessories",149000,"https://images.weserv.nl/?url=incotech.lk/images/products/206_main_1773576326.jpg","3KVA Online UPS • 2400W nominal power","In Stock","N/A","N/A","3000VA","Tower UPS"],
+          ["inc-hplaser1188","HP Laser MFP 1188w Printer","HP","printers",62000,"https://loremflickr.com/900/700/laser,printer,hp?lock=1188","Laser MFP printer • Wi-Fi capable","Out of Stock","N/A","N/A","Toner","A4"],
+          ["inc-epsonl130","Epson EcoTank L130 InkTank Printer","Epson","printers",49000,"https://loremflickr.com/900/700/epson,ink,tank,printer?lock=130","EcoTank ink tank printer","In Stock","N/A","N/A","Ink Tank","A4"],
+          ["inc-canon2010","Canon PIXMA G2010 All-In-One Printer","Canon","printers",50000,"https://loremflickr.com/900/700/canon,printer,ink,tank?lock=2010","Print • Scan • Copy • MegaTank","In Stock","N/A","N/A","Ink Tank","A4"],
+          ["inc-hptank580","HP Smart Tank 580 All-in-One Printer","HP","printers",58500,"https://images.weserv.nl/?url=incotech.lk/images/products/199_main_1773575059.jpg","Smart Tank • Print / Scan / Copy","In Stock","N/A","N/A","Ink Tank","A4"],
+          ["inc-canon4010","Canon PIXMA G4010","Canon","printers",86000,"https://loremflickr.com/900/700/canon,pixma,printer?lock=4010","PIXMA • Print / Scan / Copy • Ink Tank","Out of Stock","N/A","N/A","Ink Tank","A4"],
+          ["inc-ultra7-265k","Intel Core Ultra 7 Processor 265K","Intel","components",103500,"https://loremflickr.com/900/700/intel,processor,cpu?lock=265","20 Cores • 20 Threads • up to 5.5GHz • 3Y Warranty","In Stock","Intel Core Ultra 7 265K","DDR5","30MB Cache","LGA1851"]
+        ].map((p,i)=>({id:p[0],name:p[1],brand:p[2],category:p[3],price:p[4],rating:4.7,reviewCount:0,featured:i%6===0,image:p[5],tagline:p[6],status:p[7],specs:{processor:p[8],ram:p[9],storage:p[10],display:p[11],battery:'N/A',os:'Windows / Linux compatible',weight:'N/A',ports:'USB / HDMI / LAN where applicable'},benchmarkScore:83+(i%15),colors:['#111827']}));
+        devicesDatabase.push(...incotechFreshProducts);
+
+        // Exact Incotech photo overrides for products that also exist in the Incotech catalog.
+        const incotechPhotoMap = {
+            'amd-ryzen-7-7700x': 'https://images.weserv.nl/?url=incotech.lk/images/products/308_main_1774384348.jpg',
+            'intel-core-i7-14700k': 'https://images.weserv.nl/?url=incotech.lk/images/products/282_main_1774380756.webp',
+            'inc-kings500': 'https://images.weserv.nl/?url=incotech.lk/images/products/70_main_1771673311.gif',
+            'inc-msib860': 'https://images.weserv.nl/?url=incotech.lk/images/products/257_main_1773586440.jpg',
+            'inc-gamdiascase': 'https://images.weserv.nl/?url=incotech.lk/images/products/223_main_1773578994.jpg',
+            'inc-ontenhub': 'https://images.weserv.nl/?url=incotech.lk/images/products/361_main_1776431851.jpg',
+            'inc-canon-g3730': 'https://images.weserv.nl/?url=incotech.lk/images/products/136_main_1773486898.jpg',
+            'inc-dell-qtc1250': 'https://images.weserv.nl/?url=incotech.lk/images/products/137_main_1773486960.png',
+            'inc-dellqtc': 'https://images.weserv.nl/?url=incotech.lk/images/products/137_main_1773486960.png',
+            'inc-cruciale100': 'https://images.weserv.nl/?url=incotech.lk/images/products/142_main_1773487731.jpg',
+            'inc-i712700': 'https://images.weserv.nl/?url=incotech.lk/images/products/284_main_1774381057.webp',
+            'inc-ultra5': 'https://images.weserv.nl/?url=incotech.lk/images/products/326_main_1774386480.jpg',
+            'inc-vivobook15': 'https://images.weserv.nl/?url=incotech.lk/images/products/17_main_1771335111.webp'
+        };
+        devicesDatabase.forEach(product => {
+            if (incotechPhotoMap[product.id]) product.image = incotechPhotoMap[product.id];
+        });
+
+        // Product-photo fallback: replace generic placeholder photos with an internet image
+        // query based on the exact product title. Official Incotech product images are kept unchanged.
+        const photoQuery = (product) => {
+            const categoryMap = {
+                laptops: 'laptop',
+                components: 'computer hardware',
+                accessories: 'computer accessory',
+                printers: 'printer',
+                desktops: 'desktop computer',
+                storage: 'computer storage'
+            };
+            const clean = product.name
+                .replace(/[^a-zA-Z0-9 ]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .split(' ')
+                .slice(0, 9)
+                .join(',');
+            const kind = categoryMap[product.category] || 'technology product';
+            return `https://loremflickr.com/900/700/${encodeURIComponent(kind)},${encodeURIComponent(product.brand)},${encodeURIComponent(clean)}?lock=${Math.abs([...product.id].reduce((a,c)=>((a<<5)-a)+c.charCodeAt(0)|0,0))}`;
+        };
+        devicesDatabase.forEach(product => {
+            if (product.image && product.image.includes('images.unsplash.com')) {
+                product.image = photoQuery(product);
+            }
+        });
+
+        // Categories List
+        const categories = [
+            { id: 'all', label: 'All Tech', icon: 'fa-layer-group' },
+            { id: 'laptops', label: 'Laptops & Gaming', icon: 'fa-laptop' },
+            { id: 'smartphones', label: 'Smartphones', icon: 'fa-mobile-screen-button' },
+            { id: 'monitors', label: 'Gaming Monitors', icon: 'fa-desktop' },
+            { id: 'components', label: 'PC Components', icon: 'fa-microchip' },
+            { id: 'audio', label: 'Audio & Sound', icon: 'fa-headphones' },
+            { id: 'smartwatches', label: 'Smartwatches', icon: 'fa-stopwatch' },
+            { id: 'cameras', label: 'Cameras', icon: 'fa-camera' },
+            { id: 'accessories', label: 'Accessories', icon: 'fa-plug' },
+            { id: 'cctv', label: 'CCTV & Security', icon: 'fa-video' },
+            { id: 'storage', label: 'Storage', icon: 'fa-hard-drive' },
+            { id: 'printers', label: 'Printers', icon: 'fa-print' },
+            { id: 'desktops', label: 'Desktops', icon: 'fa-computer' }
+        ];
+
+        // Application State
+        let currentCategory = 'all';
+        let currentSearchQuery = '';
+        let currentSort = 'featured';
+        let cart = [];
+        let wishlist = [];
+        let compareList = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategoryChips();
+            renderHeroFeaturedDevice();
+            filterAndRenderProducts();
+        });
+
+        // Toggle Dark/Light Mode
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-sun text-amber-500';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-moon text-lg';
+            }
+        }
+
+        // Category Chips Setup
+        function renderCategoryChips() {
+            const container = document.getElementById('categoryChips');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setCategory('${cat.id}')" 
+                    class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap border ${
+                        currentCategory === cat.id 
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20' 
+                            : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-800 hover:border-blue-400'
+                    }">
+                    <i class="fa-solid ${cat.icon}"></i> ${cat.label}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(catId) {
+            currentCategory = catId;
+            renderCategoryChips();
+            filterAndRenderProducts();
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('searchInput');
+            currentSearchQuery = input.value.toLowerCase().trim();
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', currentSearchQuery === '');
+            filterAndRenderProducts();
+        }
+
+        function handleMobileSearch() {
+            currentSearchQuery = document.getElementById('mobileSearchInput').value.toLowerCase().trim();
+            filterAndRenderProducts();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            currentSearchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            filterAndRenderProducts();
+        }
+
+        function handleSort() {
+            currentSort = document.getElementById('sortSelect').value;
+            filterAndRenderProducts();
+        }
+
+        function resetFilters() {
+            currentCategory = 'all';
+            currentSearchQuery = '';
+            currentSort = 'featured';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            document.getElementById('sortSelect').value = 'featured';
+            renderCategoryChips();
+            filterAndRenderProducts();
+        }
+
+        // Hero Section Featured Device
+        function renderHeroFeaturedDevice() {
+            const featured = devicesDatabase.find(d => d.featured) || devicesDatabase[0];
+            const container = document.getElementById('heroFeaturedCard');
+            container.innerHTML = `
+                <div class="glass-panel border border-slate-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-cyan-500/30 transition duration-500"></div>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold rounded-full uppercase">
+                            Flagship Highlight
+                        </span>
+                        <div class="flex items-center gap-1 text-amber-400 text-sm font-bold">
+                            <i class="fa-solid fa-star"></i> ${featured.rating} (${featured.reviewCount})
+                        </div>
+                    </div>
+
+                    <div class="aspect-video w-full rounded-2xl overflow-hidden mb-6 bg-slate-900 border border-slate-800">
+                        <img src="${featured.image}" alt="${featured.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+
+                    <div class="space-y-3">
+                        <h2 class="text-2xl font-bold text-white">${featured.name}</h2>
+                        <p class="text-xs text-slate-300">${featured.tagline}</p>
+                        
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+                            <div>
+                                <span class="text-xs text-slate-400 block">Starting at</span>
+                                <span class="text-2xl font-black text-cyan-400">Rs. ${featured.price.toLocaleString()}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openDetailModal('${featured.id}')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition">
+                                    Full Specs
+                                </button>
+                                <button onclick="buyNowWhatsApp('${featured.id}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/30">
+                                    Buy Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filtering and Sorting Engine
+        function filterAndRenderProducts() {
+            let filtered = devicesDatabase.filter(device => {
+                const matchesCategory = currentCategory === 'all' || device.category === currentCategory;
+                const matchesSearch = device.name.toLowerCase().includes(currentSearchQuery) ||
+                                      device.brand.toLowerCase().includes(currentSearchQuery) ||
+                                      device.specs.processor.toLowerCase().includes(currentSearchQuery);
+                return matchesCategory && matchesSearch;
+            });
+
+            // Sorting logic
+            if (currentSort === 'price-low') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (currentSort === 'price-high') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (currentSort === 'rating') {
+                filtered.sort((a, b) => b.rating - a.rating);
+            } else {
+                filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+            }
+
+            const grid = document.getElementById('productGrid');
+            const noResults = document.getElementById('noResults');
+            document.getElementById('resultsCount').innerText = `Showing ${filtered.length} products`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            grid.innerHTML = filtered.map(device => renderProductCard(device)).join('');
+        }
+
+        // Single Product Card HTML Generator
+        function renderProductCard(device) {
+            const isCompared = compareList.some(item => item.id === device.id);
+            const isWishlisted = wishlist.some(item => item.id === device.id);
+
+            return `
+                <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-blue-500 dark:hover:border-blue-500 transition duration-300 group shadow-sm hover:shadow-xl relative">
+                    
+                    <!-- Top Badge & Quick Actions -->
+                    <div class="flex items-center justify-between mb-3 z-10">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 tracking-wider">
+                                ${device.brand}
+                            </span>
+                            ${device.status ? `<span class="text-[9px] font-bold px-2 py-1 rounded-md ${device.status === 'In Stock' ? 'bg-emerald-500/10 text-emerald-500' : device.status === 'Out of Stock' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'}">${device.status}</span>` : ''}
+                        </div>
+                        
+                        <div class="flex items-center gap-1">
+                            <!-- Compare Button -->
+                            <button onclick="toggleCompare('${device.id}')" title="Compare Device"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-xs transition ${
+                                    isCompared 
+                                        ? 'bg-cyan-500 text-white' 
+                                        : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-cyan-500 hover:text-white'
+                                }">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </button>
+                            <!-- Wishlist Button -->
+                            <button onclick="toggleWishlist('${device.id}')" title="Add to Wishlist"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-xs transition ${
+                                    isWishlisted 
+                                        ? 'bg-rose-500 text-white' 
+                                        : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-rose-500 hover:text-white'
+                                }">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Thumbnail -->
+                    <div class="aspect-square w-full rounded-xl bg-gray-50 dark:bg-slate-950 overflow-hidden mb-4 cursor-pointer relative" onclick="openDetailModal('${device.id}')">
+                        <img src="${device.image}" alt="${device.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                            <i class="fa-solid fa-microchip text-cyan-400"></i> ${device.specs.processor.split('(')[0]}
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="space-y-2 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-1 text-amber-400 text-xs font-bold mb-1">
+                                <i class="fa-solid fa-star"></i> ${device.rating} 
+                                <span class="text-gray-400 font-normal">(${device.reviewCount})</span>
+                            </div>
+                            <h3 onclick="openDetailModal('${device.id}')" class="font-bold text-sm text-gray-900 dark:text-white hover:text-blue-500 cursor-pointer line-clamp-1">
+                                ${device.name}
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
+                                ${device.tagline}
+                            </p>
+                        </div>
+
+                        <!-- Price and Add to Cart -->
+                        <div class="pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between mt-3">
+                            <div>
+                                <span class="text-[10px] text-gray-400 block font-medium">Price</span>
+                                <span class="text-lg font-black text-blue-600 dark:text-cyan-400">Rs. ${device.price.toLocaleString()}</span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <button onclick="buyNowWhatsApp('${device.id}')" class="px-3 py-2 bg-green-600 hover:bg-green-500 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-green-500/20">
+                                    <i class="fa-brands fa-whatsapp"></i> Buy Now
+                                </button>
+                                <button onclick="addToCart('${device.id}')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-500/20">
+                                    <i class="fa-solid fa-cart-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        function openDetailModal(deviceId) {
+            const device = devicesDatabase.find(d => d.id === deviceId);
+            if (!device) return;
+
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left: Gallery & Highlights -->
+                    <div class="space-y-4">
+                        <div class="aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 relative">
+                            <img src="${device.image}" alt="${device.name}" class="w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                ${device.brand}
+                            </span>
+                        </div>
+
+                        <!-- Performance Benchmark Indicator -->
+                        <div class="p-4 bg-gray-50 dark:bg-slate-950 rounded-xl border border-gray-200 dark:border-slate-800 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-bold">
+                                <span>Nexus Tech Performance Score</span>
+                                <span class="text-cyan-400 font-extrabold text-sm">${device.benchmarkScore}/100</span>
+                            </div>
+                            <div class="w-full h-2 rounded-full bg-gray-200 dark:bg-slate-800 overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full" style="width: ${device.benchmarkScore}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Technical Specifications -->
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex items-center gap-2 text-amber-400 text-sm font-bold mb-1">
+                                <i class="fa-solid fa-star"></i> ${device.rating}
+                                <span class="text-gray-400 font-normal">(${device.reviewCount} customer reviews)</span>
+                            </div>
+                            <h2 class="text-2xl font-black text-gray-900 dark:text-white">${device.name}</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${device.tagline}</p>
+                        </div>
+
+                        <div class="text-3xl font-black text-blue-600 dark:text-cyan-400">
+                            Rs. ${device.price.toLocaleString()}
+                        </div>
+
+                        <!-- Specs Grid Table -->
+                        <div class="border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden divide-y divide-gray-200 dark:divide-slate-800 text-xs">
+                            <div class="p-3 flex bg-gray-50 dark:bg-slate-950">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">Processor / SoC</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.processor}</span>
+                            </div>
+                            <div class="p-3 flex">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">RAM Memory</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.ram}</span>
+                            </div>
+                            <div class="p-3 flex bg-gray-50 dark:bg-slate-950">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">Storage</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.storage}</span>
+                            </div>
+                            <div class="p-3 flex">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">Display</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.display}</span>
+                            </div>
+                            <div class="p-3 flex bg-gray-50 dark:bg-slate-950">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">Battery & Power</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.battery}</span>
+                            </div>
+                            <div class="p-3 flex">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">Operating System</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.os}</span>
+                            </div>
+                            <div class="p-3 flex bg-gray-50 dark:bg-slate-950">
+                                <span class="w-1/3 text-gray-500 dark:text-gray-400 font-bold">Connectivity/Ports</span>
+                                <span class="w-2/3 font-semibold text-gray-800 dark:text-gray-200">${device.specs.ports}</span>
+                            </div>
+                        </div>
+
+                        <!-- Modal Actions -->
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="buyNowWhatsApp('${device.id}')" class="flex-1 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl shadow-lg shadow-green-500/30 transition text-sm flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-whatsapp"></i> Buy Now
+                            </button>
+                            <button onclick="addToCart('${device.id}'); closeDetailModal();" class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-cart-shopping"></i> Add To Cart
+                            </button>
+                            <button onclick="toggleCompare('${device.id}')" class="px-4 py-3 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 font-bold rounded-xl transition text-xs flex items-center gap-2">
+                                <i class="fa-solid fa-scale-balanced"></i> Compare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function toggleCompare(deviceId) {
+            const index = compareList.findIndex(item => item.id === deviceId);
+            if (index > -1) {
+                compareList.splice(index, 1);
+                showToast('Removed from compare list', 'info');
+            } else {
+                if (compareList.length >= 3) {
+                    showToast('You can compare up to 3 devices maximum', 'warning');
+                    return;
+                }
+                const device = devicesDatabase.find(d => d.id === deviceId);
+                compareList.push(device);
+                showToast(`Added ${device.name} to comparison matrix`, 'success');
+            }
+            updateBadges();
+            filterAndRenderProducts();
+        }
+
+        function openCompareModal() {
+            if (compareList.length === 0) {
+                showToast('Select at least 1 or 2 devices to compare specs!', 'info');
+                return;
+            }
+
+            const container = document.getElementById('compareTableContainer');
+            
+            // Build Side-by-Side Comparison Table
+            container.innerHTML = `
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="p-4 bg-gray-50 dark:bg-slate-950 font-bold text-gray-500 w-1/4 border-b border-gray-200 dark:border-slate-800">Specification</th>
+                            ${compareList.map(dev => `
+                                <th class="p-4 bg-gray-50 dark:bg-slate-950 border-b border-gray-200 dark:border-slate-800 min-w-[200px]">
+                                    <div class="space-y-2">
+                                        <img src="${dev.image}" class="w-16 h-16 object-cover rounded-lg mx-auto">
+                                        <div class="font-bold text-sm text-center text-gray-900 dark:text-white">${dev.name}</div>
+                                        <div class="text-cyan-500 text-center font-black text-base">Rs. ${dev.price.toLocaleString()}</div>
+                                        <button onclick="toggleCompare('${dev.id}'); openCompareModal();" class="text-rose-500 hover:underline text-[10px] block mx-auto">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </th>
+                            `).join('')}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-slate-800">
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">Brand</td>
+                            ${compareList.map(dev => `<td class="p-4 font-semibold text-center">${dev.brand}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">Benchmark Rating</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center font-bold text-cyan-400">${dev.benchmarkScore} / 100</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">Processor</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center">${dev.specs.processor}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">RAM Memory</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center">${dev.specs.ram}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">Display Tech</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center">${dev.specs.display}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">Battery Life</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center">${dev.specs.battery}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">OS</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center">${dev.specs.os}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-gray-500">Ports & I/O</td>
+                            ${compareList.map(dev => `<td class="p-4 text-center">${dev.specs.ports}</td>`).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('compareModal').classList.remove('hidden');
+        }
+
+        function closeCompareModal() {
+            document.getElementById('compareModal').classList.add('hidden');
+        }
+
+        function quickCompareTopDevices() {
+            const laptop1 = devicesDatabase.find(d => d.id === 'macbook-pro-m3');
+            const laptop2 = devicesDatabase.find(d => d.id === 'rog-zephyrus-g16');
+            compareList = [laptop1, laptop2];
+            updateBadges();
+            openCompareModal();
+        }
+
+        function addToCart(deviceId) {
+            const device = devicesDatabase.find(d => d.id === deviceId);
+            if (!device) return;
+
+            const existing = cart.find(item => item.id === deviceId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...device, quantity: 1 });
+            }
+
+            updateBadges();
+            renderCartItems();
+            showToast(`Added ${device.name} to Cart`, 'success');
+        }
+
+        function updateCartQuantity(deviceId, delta) {
+            const item = cart.find(i => i.id === deviceId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== deviceId);
+            }
+            updateBadges();
+            renderCartItems();
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-cart-flatbed text-4xl mb-3"></i>
+                        <p class="text-sm font-semibold">Your cart is empty</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-950 rounded-xl border border-gray-200 dark:border-slate-800">
+                        <img src="${item.image}" class="w-14 h-14 object-cover rounded-lg">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-xs line-clamp-1">${item.name}</h4>
+                            <div class="text-blue-500 font-black text-xs mt-0.5">Rs. ${item.price.toLocaleString()}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCartQuantity('${item.id}', -1)" class="w-6 h-6 rounded bg-gray-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold">-</button>
+                            <span class="text-xs font-bold">${item.quantity}</span>
+                            <button onclick="updateCartQuantity('${item.id}', 1)" class="w-6 h-6 rounded bg-gray-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold">+</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Price calculation in LKR
+            const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+
+            document.getElementById('cartSubtotal').innerText = `Rs. ${subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('cartTax').innerText = `Rs. ${tax.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('cartTotal').innerText = `Rs. ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            drawer.classList.toggle('translate-x-full');
+            renderCartItems();
+        }
+
+        function toggleWishlist(deviceId) {
+            const index = wishlist.findIndex(item => item.id === deviceId);
+            const device = devicesDatabase.find(d => d.id === deviceId);
+
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                showToast(`Removed from wishlist`, 'info');
+            } else {
+                wishlist.push(device);
+                showToast(`Saved ${device.name} to wishlist`, 'success');
+            }
+            updateBadges();
+            filterAndRenderProducts();
+        }
+
+        function toggleWishlistDrawer() {
+            const drawer = document.getElementById('wishlistDrawer');
+            drawer.classList.toggle('translate-x-full');
+            renderWishlistItems();
+        }
+
+        function renderWishlistItems() {
+            const container = document.getElementById('wishlistItemsContainer');
+            if (wishlist.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-heart-crack text-4xl mb-3"></i>
+                        <p class="text-sm font-semibold">No saved devices in wishlist</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = wishlist.map(item => `
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-950 rounded-xl border border-gray-200 dark:border-slate-800">
+                        <img src="${item.image}" class="w-14 h-14 object-cover rounded-lg">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-xs line-clamp-1">${item.name}</h4>
+                            <div class="text-blue-500 font-black text-xs mt-0.5">Rs. ${item.price.toLocaleString()}</div>
+                        </div>
+                        <button onclick="addToCart('${item.id}'); toggleWishlist('${item.id}'); renderWishlistItems();" class="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg">
+                            Move to Cart
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateBadges() {
+            const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const cartBadge = document.getElementById('cartBadge');
+            cartBadge.innerText = cartCount;
+
+            const wishlistBadge = document.getElementById('wishlistBadge');
+            wishlistBadge.innerText = wishlist.length;
+            wishlistBadge.classList.toggle('hidden', wishlist.length === 0);
+
+            const compareBadge = document.getElementById('compareBadge');
+            compareBadge.innerText = compareList.length;
+            compareBadge.classList.toggle('hidden', compareList.length === 0);
+        }
+
+        // Direct WhatsApp ordering
+        function buyNowWhatsApp(deviceId) {
+            const device = devicesDatabase.find(d => d.id === deviceId);
+            if (!device) return;
+
+            const specs = device.specs || {};
+            const message = [
+                '🛒 NEXUS TECH - New Order',
+                '',
+                `📦 Product: ${device.name}`,
+                `🏷️ Brand: ${device.brand}`,
+                `💰 Price: Rs. ${Number(device.price).toLocaleString()}`,
+                `🔢 Quantity: 1`,
+                '',
+                '⚙️ Product Details:',
+                `• Processor: ${specs.processor || 'N/A'}`,
+                `• RAM: ${specs.ram || 'N/A'}`,
+                `• Storage: ${specs.storage || 'N/A'}`,
+                `• Display: ${specs.display || 'N/A'}`,
+                `• Battery/Power: ${specs.battery || 'N/A'}`,
+                `• OS: ${specs.os || 'N/A'}`,
+                `• Ports: ${specs.ports || 'N/A'}`,
+                '',
+                'I would like to order this product. Please confirm availability and delivery details.'
+            ].join('\n');
+
+            const whatsappNumber = '94766026723';
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast('Cart is empty!', 'warning');
+                return;
+            }
+
+            const container = document.getElementById('checkoutSummaryList');
+            container.innerHTML = cart.map(item => `
+                <div class="flex justify-between border-b border-gray-200 dark:border-slate-800 pb-1">
+                    <span>${item.quantity}x ${item.name}</span>
+                    <span class="font-bold">Rs. ${(item.price * item.quantity).toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            toggleCartDrawer();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function completeCheckout() {
+            cart = [];
+            updateBadges();
+            document.getElementById('checkoutModal').classList.add('hidden');
+            showToast('Order simulation complete! Thank you.', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-slate-900 border-slate-700 text-white';
+            if (type === 'success') bg = 'bg-emerald-900/90 border-emerald-500 text-emerald-100';
+            if (type === 'warning') bg = 'bg-amber-900/90 border-amber-500 text-amber-100';
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border text-xs font-bold shadow-2xl transition duration-300 flex items-center gap-2 ${bg}`;
+            toast.innerHTML = `<i class="fa-solid fa-bell"></i> ${message}`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
